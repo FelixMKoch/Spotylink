@@ -31,7 +31,7 @@ Hinweis: Im Laufe des Projektes hat sich herausgestellt, dass die Spotify API ke
 1. spotylink-export [userid]: Get Request mit User-ID. Es wird eine Playlist fürr die Session in der der User gerade ist erstellt, und auf das Spotify Konto des gegebenen Users exportiert.
 
 ## Struktur   
-![Strukturbild](https://inf-git.fh-rosenheim.de/inf-ca/sose2022/spotylink/-/wikis/uploads/ef9038f803abdb75cd43a8535d8bbffe/image.png)
+![Strukturbild](https://user-images.githubusercontent.com/70198454/182455404-9880ace7-8693-4211-a2f5-6c01893a4a66.png)
 
 
 ## Api / Resourcen
