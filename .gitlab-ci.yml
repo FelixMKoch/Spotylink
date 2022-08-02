@@ -1,0 +1,154 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  AZ_CLIENT_ID: ################
+  AZ_CLIENT_SECRET: ################
+  AZ_TENANT_ID: ################
+  AZ_RG: spotylink-infca
+  AZ_STORAGE_ACCOUNT_NAME: spotylink
+  AZ_STORAGE_WEB_APP_NAME: spotylinkwebapp
+  AZ_LOCATION: westeurope
+  AZ_STORAGE_LOCATION: westeurope
+  AZ_FUNCAPP_NAME_1: saveusr
+  AZ_FUNCAPP_NAME_2: createse
+  AZ_FUNCAPP_NAME_3: exportplaylist
+  AZ_CF_DISABLE_APPINSIGHTS: 'true'
+
+
+
+build_rg:
+  stage: build
+  image: mcr.microsoft.com/azure-cli:2.29.2
+  script:
+    - export AZURE_CLI_DISABLE_CONNECTION_VERIFICATION=1
+    - az login --service-principal -u $AZ_CLIENT_ID -p $AZ_CLIENT_SECRET --tenant $AZ_TENANT_ID
+    - az group create -l $AZ_LOCATION -g $AZ_RG
+
+
+build_storageaccount:
+  stage: build
+  image: mcr.microsoft.com/azure-cli:2.29.2
+  needs: ["build_rg"]
+  script:
+    - export AZURE_CLI_DISABLE_CONNECTION_VERIFICATION=1
+    - az login --service-principal -u $AZ_CLIENT_ID -p $AZ_CLIENT_SECRET --tenant $AZ_TENANT_ID
+    - az storage account create --name $AZ_STORAGE_ACCOUNT_NAME --resource-group $AZ_RG --location $AZ_STORAGE_LOCATION --sku Standard_LRS
+
+
+
+
+
+
+build_web_storageaccount:
+  stage: build
+  image: mcr.microsoft.com/azure-cli:2.29.2
+  needs: ["build_rg"]
+  script:
+    - export AZURE_CLI_DISABLE_CONNECTION_VERIFICATION=1
+    - az login --service-principal -u $AZ_CLIENT_ID -p $AZ_CLIENT_SECRET --tenant $AZ_TENANT_ID
+    - az storage account create --name $AZ_STORAGE_WEB_APP_NAME --resource-group $AZ_RG --location $AZ_STORAGE_LOCATION --sku Standard_LRS
+    - az storage blob service-properties update --account-name $AZ_STORAGE_WEB_APP_NAME --static-website true --404-document 404.html --index-document index.html
+
+build_user_function:
+  stage: build
+  image: mcr.microsoft.com/azure-cli:2.29.2
+  needs: ["build_rg","build_storageaccount"]
+  script:
+    - export AZURE_CLI_DISABLE_CONNECTION_VERIFICATION=1
+    - az login --service-principal -u $AZ_CLIENT_ID -p $AZ_CLIENT_SECRET --tenant $AZ_TENANT_ID
+    - az functionapp create -g $AZ_RG -n $AZ_FUNCAPP_NAME_1 -s $AZ_STORAGE_ACCOUNT_NAME --functions-version 3 --os-type Linux --runtime python --runtime-version 3.9 -c $AZ_LOCATION --disable-app-insights $AZ_CF_DISABLE_APPINSIGHTS 
+
+
+
+build_session_create_function:
+  stage: build
+  image: mcr.microsoft.com/azure-cli:2.29.2
+  needs: ["build_rg","build_storageaccount"]
+  script:
+    - export AZURE_CLI_DISABLE_CONNECTION_VERIFICATION=1
+    - az login --service-principal -u $AZ_CLIENT_ID -p $AZ_CLIENT_SECRET --tenant $AZ_TENANT_ID
+    - az functionapp create -g $AZ_RG -n $AZ_FUNCAPP_NAME_2 -s $AZ_STORAGE_ACCOUNT_NAME --functions-version 3 --os-type Linux --runtime python --runtime-version 3.9 -c $AZ_LOCATION --disable-app-insights $AZ_CF_DISABLE_APPINSIGHTS 
+
+
+build_export_function:
+  stage: build
+  image: mcr.microsoft.com/azure-cli:2.29.2
+  needs: ["build_rg","build_storageaccount"]
+  script:
+    - export AZURE_CLI_DISABLE_CONNECTION_VERIFICATION=1
+    - az login --service-principal -u $AZ_CLIENT_ID -p $AZ_CLIENT_SECRET --tenant $AZ_TENANT_ID
+    - az functionapp create -g $AZ_RG -n $AZ_FUNCAPP_NAME_3 -s $AZ_STORAGE_ACCOUNT_NAME --functions-version 3 --os-type Linux --runtime python --runtime-version 3.9 -c $AZ_LOCATION --disable-app-insights $AZ_CF_DISABLE_APPINSIGHTS
+
+
+deploy_static_website:
+  stage: deploy
+  needs: ["build_web_storageaccount"]
+  image: mcr.microsoft.com/azure-cli:2.29.2
+  script:
+    - cd 01Projekt
+    - cd frontend
+    - cd spotylink_frontend
+    - export AZURE_CLI_DISABLE_CONNECTION_VERIFICATION=1
+    - az login --service-principal -u $AZ_CLIENT_ID -p $AZ_CLIENT_SECRET -t $AZ_TENANT_ID
+    - az storage blob upload-batch --account-name $AZ_STORAGE_WEB_APP_NAME -s ./public -d '$web'
+
+
+deploy_user_function:
+  stage: deploy
+  needs: ["build_user_function"]
+  image: mcr.microsoft.com/azure-cli:2.29.2
+  script:
+  
+    - cd 01Projekt
+    - cd functions
+    - cd save_usr
+    - apk add zip
+    - export AZURE_CLI_DISABLE_CONNECTION_VERIFICATION=1
+    - az login --service-principal -u $AZ_CLIENT_ID -p $AZ_CLIENT_SECRET -t $AZ_TENANT_ID
+
+    
+    - zip -r app.zip .
+    - az functionapp cors remove -g $AZ_RG -n $AZ_FUNCAPP_NAME_1 -a
+    - az resource update -n web -g $AZ_RG --namespace Microsoft.Web --resource-type config --parent sites/$AZ_FUNCAPP_NAME_1 --set properties.cors.supportCredentials=false 
+    - az functionapp cors add -g $AZ_RG -n $AZ_FUNCAPP_NAME_1 -a "*"
+    - az functionapp deployment source config-zip -g $AZ_RG --src app.zip -n $AZ_FUNCAPP_NAME_1
+
+deploy_session_creat_function:
+  stage: deploy
+  needs: ["build_session_create_function"]
+  image: mcr.microsoft.com/azure-cli:2.29.2
+  script:
+    - cd 01Projekt
+    - cd functions
+    - cd create_session
+    - apk add zip
+    - export AZURE_CLI_DISABLE_CONNECTION_VERIFICATION=1
+    - az login --service-principal -u $AZ_CLIENT_ID -p $AZ_CLIENT_SECRET -t $AZ_TENANT_ID
+
+    
+    - zip -r app.zip .
+    - az functionapp cors remove -g $AZ_RG -n $AZ_FUNCAPP_NAME_2 -a
+    - az resource update -n web -g $AZ_RG --namespace Microsoft.Web --resource-type config --parent sites/$AZ_FUNCAPP_NAME_2 --set properties.cors.supportCredentials=false 
+    - az functionapp cors add -g $AZ_RG -n $AZ_FUNCAPP_NAME_2 -a "*"
+    - az functionapp deployment source config-zip -g $AZ_RG --src app.zip -n $AZ_FUNCAPP_NAME_2
+
+deploy_export_function:
+  stage: deploy
+  needs: ["build_export_function"]
+  image: mcr.microsoft.com/azure-cli:2.29.2
+  script:
+    - cd 01Projekt
+    - cd functions
+    - cd export_playlist
+    - apk add zip
+    - export AZURE_CLI_DISABLE_CONNECTION_VERIFICATION=1
+    - az login --service-principal -u $AZ_CLIENT_ID -p $AZ_CLIENT_SECRET -t $AZ_TENANT_ID
+
+    
+    - zip -r app.zip .
+    - az functionapp cors remove -g $AZ_RG -n $AZ_FUNCAPP_NAME_3 -a
+    - az resource update -n web -g $AZ_RG --namespace Microsoft.Web --resource-type config --parent sites/$AZ_FUNCAPP_NAME_3 --set properties.cors.supportCredentials=false
+    - az functionapp cors add -g $AZ_RG -n $AZ_FUNCAPP_NAME_3 -a "*"
+    - az functionapp deployment source config-zip -g $AZ_RG --src app.zip -n $AZ_FUNCAPP_NAME_3

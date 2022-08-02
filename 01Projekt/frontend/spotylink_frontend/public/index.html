@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+  <head>
+    
+    <img src="ICONSPOTYLINK.png" id="spotylink_image">
+
+    <title>Spotylink</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" 
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" 
+      crossorigin="anonymous">
+    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+  </head>
+  <body>
+    <div class="row" id="loginrow">
+    <div id="login">
+      <h2 style="margin: auto; margin-top:80px; color:white; text-align: center;" >Willkomen auf Spotylink</h2><br><br>
+      <div class="container" style=" width:70%; margin: auto; margin-top:80px; ">
+        <p class="willkommenstext" style="color:white;">
+          Melde dich mit deinen Spotify Account an und erstelle oder join einer Session um Playlists mit deinen Freunden zu generieren. <br>
+        </p>  
+        <h3 style="color:white;">Click here to Log in to Spotify</h2>
+          <button class = "btn btn-success" id="login_button" style="margin-bottom:10px ;">Login</button>      
+      </div>
+    </div>
+    </div>
+  </div>
+    <div id="loggedin" style="display:none;">
+      <img src="ICONSPOTYLINK.png" id="spotylink_image">
+
+      <div class="jumbotron text-center" id="login" style=" background-color: #d6d6d600; ">
+        <h2 id="hello_head" style="color: white;"></h2>
+      </div>
+      <div class="container" style=" background-color:rgba(5, 46, 55, 0.856)">
+        <div class="row" style="max-width: 80%; margin: auto;">
+          <div class="col-sm-6 card" style="border-radius: 10px; background-color:rgba(5, 46, 55, 0)">
+            <h2 class="card-title" style="text-align: center; color:white">User-Information</h2>
+            <ul >
+              <li class="list-group-item" id="displayname" style=" background-color:rgba(5, 46, 55, 0.9);color:white"></li>
+              <li class="list-group-item" id="front_email" style=" background-color:rgba(5, 46, 55, 0.8);color:white"></li>
+              <li class="list-group-item" id="account_type" style=" background-color:rgba(5, 46, 55, 0.7);color:white"></li>
+            </ul>
+          </div>
+          <div class="col-sm-6 card" style="border-radius:10px; background-color:rgba(5, 46, 55, 0)">
+            <h2 class="card-title" style="text-align: center; color:white">Session</h2>
+            <br/>
+            <div id="session_input_things">
+              <button class="btn btn-primary" id="create_session_button" style="display: block;color:white">
+                Create Session
+              </button>
+
+              <br>
+              <br>
+              <button class="btn btn-primary" id="join_session_button" style="display: block; margin-top: 5px;color:white">
+                Join Session
+              </button>
+              <input type="text" id="join_session_input" placeholder="Session ID eingeben" style="margin-right:20px; margin-top:10px;">
+            </div>
+            <div id="session_export_things" style="display: none;color:white">
+              <button id="export_playlist_button" class="btn btn-success" style="color:white">Exportieren</button>
+              <p class="result_message" id="export_result_message" style="color:white"></p>
+            </div>
+            <p class="button_res" id="create_button_res" style="color:white"></p>
+            <p class="button_fail" id="create_button_fail" style="color:white"></p>
+          </div>
+          <div class="col-sm-12 card" id="currentsession" style="border-radius:10px; background-color:rgba(5, 46, 55, 0)">
+            <h2 class="card-title" style="text-align: center; color:white">Current Session</h2>
+            <br/>
+            <div id="current_session" style="display:none; color:white">
+              <table>
+                <thead>
+                  <th>
+                    Session Users
+                  </th>
+                </thead>
+                <tbody id="myTable">
+                </tbody>
+              </table>
+            </div>
+            <div id="no_current_session">
+              <p class="info_message"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script 
+      src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"
+    ></script>
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.js"
+      integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+      crossorigin="anonymous"
+    ></script>
+    <script src="index.js"> </script>
+    <footer>      
+      <p style="color: white; margin-top: 200px;">
+      CA Projekt 2022 TH Rosenheim, Felix Koch und Nils Faerbert
+      </p>
+    </footer>
+
+  </body>
+
+</html>

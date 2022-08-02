@@ -1,0 +1,69 @@
+title{
+    font-size: large;
+    color: rgb(43, 43, 43);
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;    
+
+}
+img{
+    max-width: 75px;
+    max-height: 75px;
+    margin: 10px;
+    border-radius: 10px;
+   
+}
+
+.mainh2{
+    margin-bottom: 30px;
+    font-size: xx-large;
+    color: rgb(43, 43, 43);
+    margin-left: 0px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;    
+
+
+}
+
+.container{
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    text-align: center;
+    background-color:rgba(5, 46, 55, 0.856);
+    max-width: 100%; 
+    border-radius:10px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;  
+    margin: auto;
+}
+  
+
+body{
+    min-height:100%;
+    background:linear-gradient(0deg, rgba(0, 0, 0, 0.6), rgba(2, 126, 128, 0.6)), url("Spotifylogo.png");
+    background-size:cover;
+    background-attachment:scroll;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;    }
+
+  
+  h2 {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+
+    font-size:60px ;
+    }
+.willkommenstext{
+    
+        margin-left: 20px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        margin-right: 20px;
+        font-size: 22px;
+        text-align: center;
+font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;  
+
+
+}
+
+
+#currentsession{
+    width: 100%;
+}
+
